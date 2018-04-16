@@ -5,9 +5,10 @@ clean:
 
 setup:
 	go get github.com/golang/dep/cmd/dep
+	source ./.env
 
 build: setup
-	dep ensure
+	dep ensure -update
 	env GOOS=linux GOARCH=amd64 go build
 
 docker-clean:

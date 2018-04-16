@@ -17,19 +17,21 @@ services:
             - "6379:6379"
         healthcheck:
             test: ["CMD", "redis-cli","ping"]
-            interval: 30s
+            interval: 10s
             timeout: 10s
-            retries: 3
+            retries: 10
     mysql:
         image: mysql
         ports:
             - "3306:3306"
         environment:
             MYSQL_ROOT_PASSWORD: pass
-            MYSQL_DATABASE: db
-            MYSQL_USER: user
-            MYSQL_PASSWORD: pass
+            
+        volumes:
+            - "./db/data:/var/lib/mysql"
+            - "./db/init:/docker-entrypoint-initdb.d"
         healthcheck:
             test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-            timeout: 20s
+            interval: 10s
+            timeout: 10s
             retries: 10

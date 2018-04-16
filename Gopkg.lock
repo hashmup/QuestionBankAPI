@@ -2,10 +2,31 @@
 
 
 [[projects]]
+  name = "github.com/Masterminds/squirrel"
+  packages = ["."]
+  revision = "a6b93000bd219143c56c16e6cb1c4b91da3f224b"
+  version = "v1.0"
+
+[[projects]]
   name = "github.com/go-chi/chi"
   packages = ["."]
   revision = "e83ac2304db3c50cf03d96a2fcd39009d458bc35"
   version = "v3.3.2"
+
+[[projects]]
+  name = "github.com/go-playground/locales"
+  packages = [
+    ".",
+    "currency"
+  ]
+  revision = "f63010822830b6fe52288ee52d5a1151088ce039"
+  version = "v0.12.1"
+
+[[projects]]
+  name = "github.com/go-playground/universal-translator"
+  packages = ["."]
+  revision = "b32fa301c9fe55953584134cb6853a13c87ec0a1"
+  version = "v0.16.0"
 
 [[projects]]
   name = "github.com/go-sql-driver/mysql"
@@ -43,9 +64,33 @@
   revision = "f611eb38b3875cc3bd991ca91c51d06446afa14c"
   version = "v1.3.0"
 
+[[projects]]
+  branch = "master"
+  name = "github.com/lann/builder"
+  packages = ["."]
+  revision = "1b87b36280d04fe7882d1512bf038ea2967ad534"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lann/ps"
+  packages = ["."]
+  revision = "62de8c46ede02a7675c4c79c84883eb164cb71e3"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/unrolled/render"
+  packages = ["."]
+  revision = "65450fb6b2d3595beca39f969c411db8f8d5c806"
+
+[[projects]]
+  name = "gopkg.in/go-playground/validator.v9"
+  packages = ["."]
+  revision = "14984d91328f9612b58443cbdf4a077d4fd71091"
+  version = "v9.15.0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "29b4cc33d179fe00550190a6ecc725df86f02a3311a45e00904529dbf199315d"
+  inputs-digest = "675af2217e776870409311a08f8b7efc8174212ecd4f09def10068069b2b1a43"
   solver-name = "gps-cdcl"
   solver-version = 1

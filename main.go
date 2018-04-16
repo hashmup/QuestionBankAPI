@@ -6,7 +6,10 @@ import (
 	"net/http/pprof"
 
 	"github.com/go-chi/chi"
+	"github.com/hashmup/QuestionBankAPI/src/application"
 	"github.com/hashmup/QuestionBankAPI/src/config"
+	"github.com/hashmup/QuestionBankAPI/src/infrastructure/persistence"
+	"github.com/hashmup/QuestionBankAPI/src/interfaces/school"
 	"github.com/justinas/alice"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -52,6 +55,13 @@ func initHandlers() http.Handler {
 
 	fmt.Printf("%#v\n", dbConn)
 	fmt.Printf("%#v\n", redisConn)
+
+	schoolRepo := persistence.NewSchoolRepository(dbConn)
+	schoolService := application.NewSchoolService(schoolRepo)
+	schoolDependency := &school.Dependency{
+		SchoolService: schoolService,
+	}
+	r = school.MakeSchoolHandler(schoolDependency, r)
 
 	r.HandleFunc("/debug/pprof/", pprof.Index)
 	r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
