@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/hashmup/QuestionBankAPI/src/domain/entity"
 	"github.com/hashmup/QuestionBankAPI/src/domain/repository"
 	"github.com/jmoiron/sqlx"
@@ -45,5 +46,15 @@ func (repo *userRepository) PostUserRegister(ctx context.Context, name, email, p
 	}
 
 	user.ID, _ = res.LastInsertId()
+	return &user, nil
+}
+
+func (repo *userRepository) UserLogin(ctx context.Context, email, password string) (*entity.User, error) {
+	user := entity.User{}
+	sql, args, _ := sq.Select("*").From("users").Where(sq.Eq{"email": email}).ToSql()
+	err := repo.DBClient.GetContext(ctx, &user, sql, args...)
+	if err != nil {
+		panic(err)
+	}
 	return &user, nil
 }

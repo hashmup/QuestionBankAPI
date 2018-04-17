@@ -10,6 +10,7 @@ import (
 	"github.com/hashmup/QuestionBankAPI/src/config"
 	"github.com/hashmup/QuestionBankAPI/src/infrastructure/persistence"
 	"github.com/hashmup/QuestionBankAPI/src/interfaces/school"
+	"github.com/hashmup/QuestionBankAPI/src/interfaces/session"
 	"github.com/hashmup/QuestionBankAPI/src/interfaces/user"
 	"github.com/justinas/alice"
 	"github.com/kelseyhightower/envconfig"
@@ -72,6 +73,14 @@ func initHandlers() http.Handler {
 	}
 
 	r = user.MakeUserHandler(userDependency, r)
+
+	sessionRepo := persistence.NewSessionRepository(dbConn, redisConn)
+	sessionService := application.NewSessionService(sessionRepo, userRepo)
+	sessionDependency := &session.Dependency{
+		SessionService: sessionService,
+	}
+
+	r = session.MakeSessionHandler(sessionDependency, r)
 
 	r.HandleFunc("/debug/pprof/", pprof.Index)
 	r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)

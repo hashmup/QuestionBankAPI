@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/Graffity-X/user-api"
+  packages = ["src/config"]
+  revision = "8fad28a51bc61989a7f93233a0d98dc842e05832"
+
+[[projects]]
   name = "github.com/Masterminds/squirrel"
   packages = ["."]
   revision = "a6b93000bd219143c56c16e6cb1c4b91da3f224b"
@@ -100,6 +106,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9033ec034f6b2d6acd5204d205746e204de0f9f7b4aedf9689b64f71726a40af"
+  inputs-digest = "b930ea15cf23475fb855a95c78b973e442eae3dc81743337b9a8ab030b7a3cce"
   solver-name = "gps-cdcl"
   solver-version = 1

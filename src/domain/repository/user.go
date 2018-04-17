@@ -8,4 +8,5 @@ import (
 
 type UserRepository interface {
 	PostUserRegister(ctx context.Context, name, email, password, accountType string, schoolID int64) (*entity.User, error)
+	UserLogin(ctx context.Context, email, password string) (*entity.User, error)
 }
