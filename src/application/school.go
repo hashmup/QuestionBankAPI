@@ -9,20 +9,30 @@ import (
 )
 
 type schoolService struct {
-	repo repository.SchoolRepository
+	schoolRepo repository.SchoolRepository
+	classRepo  repository.ClassRepository
 }
 
 // NewSchoolService creates a handling event service with necessary dependencies.
-func NewSchoolService(repo repository.SchoolRepository) service.SchoolService {
+func NewSchoolService(schoolRepo repository.SchoolRepository, classRepo repository.ClassRepository) service.SchoolService {
 	return &schoolService{
-		repo: repo,
+		schoolRepo: schoolRepo,
+		classRepo:  classRepo,
 	}
 }
 
 func (s *schoolService) GetSchools(ctx context.Context) ([]*entity.School, error) {
-	schools, err := s.repo.GetSchools(ctx)
+	schools, err := s.schoolRepo.GetSchools(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return schools, nil
+}
+
+func (s *schoolService) GetClasses(ctx context.Context, schoolID int64) ([]*entity.Class, error) {
+	classes, err := s.classRepo.GetClasses(ctx, schoolID)
+	if err != nil {
+		return nil, err
+	}
+	return classes, nil
 }

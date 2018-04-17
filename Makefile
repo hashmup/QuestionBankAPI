@@ -5,7 +5,7 @@ clean:
 
 setup:
 	go get github.com/golang/dep/cmd/dep
-	source ./.env
+#	source ./.env
 
 build: setup
 	dep ensure -update

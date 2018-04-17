@@ -7,6 +7,8 @@ import (
 
 func MakeSchoolHandler(d *Dependency, r *chi.Mux) *chi.Mux {
 	getSchoolsHandler := interfaces.CustomHandler{Impl: d.GetSchoolsHandler}
+	getClassesHandler := interfaces.CustomHandler{Impl: d.GetClassesHandler}
 	r.Method("GET", "/schools", getSchoolsHandler)
+	r.Method("GET", "/schools/{id}/classes", getClassesHandler)
 	return r
 }

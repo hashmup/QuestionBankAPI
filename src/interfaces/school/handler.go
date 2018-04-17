@@ -23,3 +23,22 @@ func (d *Dependency) GetSchoolsHandler(w http.ResponseWriter, r *http.Request) {
 
 	interfaces.Redererer.JSON(w, http.StatusOK, res)
 }
+
+func (d *Dependency) GetClassesHandler(w http.ResponseWriter, r *http.Request) {
+	payload, err := decodeGetClassesRequest(r)
+	if err != nil {
+		res := interfaces.NewErrorResponse(http.StatusBadRequest, err.Error())
+		interfaces.Redererer.JSON(w, res.Status, res)
+		return
+	}
+	classes, err := d.SchoolService.GetClasses(r.Context(), payload.SchoolID)
+	if err != nil {
+		res := interfaces.NewErrorResponse(http.StatusInternalServerError, err.Error())
+		interfaces.Redererer.JSON(w, res.Status, res)
+		return
+	}
+
+	res := encodeGetClassesResponse(classes)
+
+	interfaces.Redererer.JSON(w, http.StatusOK, res)
+}

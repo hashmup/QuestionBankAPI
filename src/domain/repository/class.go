@@ -1,4 +1,4 @@
-package service
+package repository
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"github.com/hashmup/QuestionBankAPI/src/domain/entity"
 )
 
-type SchoolService interface {
-	GetSchools(ctx context.Context) ([]*entity.School, error)
+type ClassRepository interface {
 	GetClasses(ctx context.Context, schoolID int64) ([]*entity.Class, error)
 }

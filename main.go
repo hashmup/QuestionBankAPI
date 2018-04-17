@@ -10,6 +10,7 @@ import (
 	"github.com/hashmup/QuestionBankAPI/src/config"
 	"github.com/hashmup/QuestionBankAPI/src/infrastructure/persistence"
 	"github.com/hashmup/QuestionBankAPI/src/interfaces/school"
+	"github.com/hashmup/QuestionBankAPI/src/interfaces/user"
 	"github.com/justinas/alice"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -56,12 +57,21 @@ func initHandlers() http.Handler {
 	fmt.Printf("%#v\n", dbConn)
 	fmt.Printf("%#v\n", redisConn)
 
+	classRepo := persistence.NewClassRepository(dbConn)
 	schoolRepo := persistence.NewSchoolRepository(dbConn)
-	schoolService := application.NewSchoolService(schoolRepo)
+	schoolService := application.NewSchoolService(schoolRepo, classRepo)
 	schoolDependency := &school.Dependency{
 		SchoolService: schoolService,
 	}
 	r = school.MakeSchoolHandler(schoolDependency, r)
+
+	userRepo := persistence.NewUserRepository(dbConn)
+	userService := application.NewUserService(userRepo)
+	userDependency := &user.Dependency{
+		UserService: userService,
+	}
+
+	r = user.MakeUserHandler(userDependency, r)
 
 	r.HandleFunc("/debug/pprof/", pprof.Index)
 	r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
