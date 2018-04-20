@@ -2,10 +2,12 @@ package persistence
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/Graffity-X/user-api/src/config"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/gomodule/redigo/redis"
+	"github.com/hashmup/QuestionBankAPI/src/config"
 	"github.com/hashmup/QuestionBankAPI/src/domain/entity"
 	"github.com/hashmup/QuestionBankAPI/src/domain/repository"
 	"github.com/jmoiron/sqlx"
@@ -49,4 +51,41 @@ func (repo *sessionRepository) CreateSession(ctx context.Context, userID int64) 
 	repo.RedisClient.Do("SET", userID, token)
 	repo.RedisClient.Do("EXPIRE", userID, config.RedisTTL)
 	return &session, nil
+}
+
+func (repo *sessionRepository) DeleteSession(ctx context.Context, userID int64, token string) (bool, error) {
+	sql, args, _ := sq.Update("sessions").Set("deleted_at", time.Now()).Where(sq.Eq{"user_id": userID, "token": token}).ToSql()
+	_, err := repo.DBClient.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (repo *sessionRepository) IsValidSession(ctx context.Context, userID int64, token string) (bool, error) {
+	session := entity.Session{}
+	sql, args, _ := sq.Select("*").From("sessions").Where(sq.Eq{"token": token, "user_id": userID, "deleted_at": nil}).ToSql()
+	fmt.Printf("%s\n", sql)
+	err := repo.DBClient.GetContext(ctx, &session, sql, args...)
+	if err != nil {
+		return false, nil
+	}
+	if session.ExpiredAt.Before(time.Now()) {
+		// This means expiration date < time.now, thus this token is already expired
+		// Notify client to re-login
+		return false, nil
+	}
+	// o/w update the expiration date for both DB and redis
+	repo.updateExpirationDate(ctx, session)
+	return true, nil
+}
+
+func (repo *sessionRepository) updateExpirationDate(ctx context.Context, session entity.Session) {
+	session.ExpiredAt = time.Now().AddDate(0, 1, 0)
+	sql := "UPDATE sessions SET expired_at = :expired_at WHERE id = :id"
+	_, err := repo.DBClient.NamedExecContext(ctx, sql, session)
+	if err != nil {
+		panic(err)
+	}
+	repo.RedisClient.Do("EXPIRE", session.UserID, config.RedisTTL)
 }

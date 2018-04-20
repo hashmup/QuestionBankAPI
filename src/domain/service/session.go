@@ -7,5 +7,7 @@ import (
 )
 
 type SessionService interface {
-	PostSessionLogin(ctx context.Context, email, password string) (*entity.Session, error)
+	LoginSession(ctx context.Context, email, password string) (*entity.Session, error)
+	LogoutSession(ctx context.Context, userID int64, token string) (bool, error)
+	IsValidSession(ctx context.Context, userID int64, token string) (bool, error)
 }

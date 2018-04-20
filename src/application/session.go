@@ -23,7 +23,7 @@ func NewSessionService(sessionRepo repository.SessionRepository, userRepo reposi
 	}
 }
 
-func (s *sessionService) PostSessionLogin(ctx context.Context, email, password string) (*entity.Session, error) {
+func (s *sessionService) LoginSession(ctx context.Context, email, password string) (*entity.Session, error) {
 	user, err := s.userRepo.UserLogin(ctx, email, password)
 	if err != nil {
 		panic(err)
@@ -40,4 +40,20 @@ func (s *sessionService) PostSessionLogin(ctx context.Context, email, password s
 		return nil, err
 	}
 	return session, nil
+}
+
+func (s *sessionService) LogoutSession(ctx context.Context, userID int64, token string) (bool, error) {
+	succeed, err := s.sessionRepo.DeleteSession(ctx, userID, token)
+	if err != nil {
+		panic(err)
+	}
+	return succeed, nil
+}
+
+func (s *sessionService) IsValidSession(ctx context.Context, userID int64, token string) (bool, error) {
+	isValid, err := s.sessionRepo.IsValidSession(ctx, userID, token)
+	if err != nil {
+		panic(err)
+	}
+	return isValid, nil
 }
