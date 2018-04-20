@@ -30,7 +30,7 @@ func (s *schoolService) GetSchools(ctx context.Context) ([]*entity.School, error
 }
 
 func (s *schoolService) GetClasses(ctx context.Context, schoolID int64) ([]*entity.Class, error) {
-	classes, err := s.classRepo.GetClasses(ctx, schoolID)
+	classes, err := s.classRepo.GetClassesBySchoolID(ctx, schoolID)
 	if err != nil {
 		return nil, err
 	}
