@@ -89,7 +89,7 @@
     "bcrypt",
     "blowfish"
   ]
-  revision = "d6449816ce06963d9d136eee5a56fca5b0616e7e"
+  revision = "b0697eccbea9adec5b7ba8008f4c33d98d733388"
 
 [[projects]]
   name = "gopkg.in/go-playground/validator.v9"

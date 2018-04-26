@@ -19,9 +19,9 @@ func (d *Dependency) GetSchoolsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := encodeGetSchoolsResponse(schools)
+	// res := encodeGetSchoolsResponse(schools)
 
-	interfaces.Redererer.JSON(w, http.StatusOK, res)
+	interfaces.Redererer.JSON(w, http.StatusOK, schools)
 }
 
 func (d *Dependency) GetClassesHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +38,7 @@ func (d *Dependency) GetClassesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := encodeGetClassesResponse(classes)
+	// res := encodeGetClassesResponse(classes)
 
-	interfaces.Redererer.JSON(w, http.StatusOK, res)
+	interfaces.Redererer.JSON(w, http.StatusOK, classes)
 }

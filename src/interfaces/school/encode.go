@@ -3,11 +3,11 @@ package school
 import "github.com/hashmup/QuestionBankAPI/src/domain/entity"
 
 type GetSchoolsResponsePayload struct {
-	Schools []*entity.School `json:"schools"`
+	Schools []*entity.School `json:"-"`
 }
 
 type GetClassesResponsePayload struct {
-	Classes []*entity.Class `json:"classes"`
+	Classes []*entity.Class `json:""`
 }
 
 func encodeGetSchoolsResponse(objs []*entity.School) *GetSchoolsResponsePayload {
