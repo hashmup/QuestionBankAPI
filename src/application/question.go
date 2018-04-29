@@ -42,3 +42,11 @@ func (s *questionService) GetQuestionAnswer(ctx context.Context, userID, questio
 	}
 	return questionAnswer, nil
 }
+
+func (s *questionService) SearchQuestions(ctx context.Context, name, tag string) ([]*entity.QuestionRequest, error) {
+	questions, err := s.questionRepo.SearchQuestions(ctx, name, tag)
+	if err != nil {
+		return nil, err
+	}
+	return questions, nil
+}

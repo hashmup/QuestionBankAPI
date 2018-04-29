@@ -27,6 +27,11 @@ type PostQuestionsRequestPayload struct {
 	Rating          *entity.Rating `json:"rating"`
 }
 
+type SearchQuestionRequestPayload struct {
+	Name string `json:"name"`
+	Tag  string `json:"tag"`
+}
+
 func decodeSessionHeaderRequest(r *http.Request) (*entity.SessionHeader, error) {
 	payload := entity.SessionHeader{}
 	auth := r.Header.Get("AuthToken")
@@ -76,6 +81,16 @@ func decodeGetQuestionAnswerRequest(r *http.Request) (*GetQuestionAnswerRequestP
 		return nil, err
 	}
 	payload.QuestionID = questionID
+
+	return &payload, nil
+}
+
+func decodeSearchQuestionRequest(r *http.Request) (*SearchQuestionRequestPayload, error) {
+	payload := SearchQuestionRequestPayload{}
+	name := r.URL.Query().Get("name")
+	tag := r.URL.Query().Get("tag")
+	payload.Name = name
+	payload.Tag = tag
 
 	return &payload, nil
 }

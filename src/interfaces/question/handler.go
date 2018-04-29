@@ -109,3 +109,34 @@ func (d *Dependency) GetQuestionAnswerHandler(w http.ResponseWriter, r *http.Req
 
 	interfaces.Redererer.JSON(w, http.StatusOK, answers)
 }
+
+func (d *Dependency) SearchQuestionHandler(w http.ResponseWriter, r *http.Request) {
+	payload, err := decodeSessionHeaderRequest(r)
+	if err != nil {
+		res := interfaces.NewErrorResponse(http.StatusBadRequest, err.Error())
+		interfaces.Redererer.JSON(w, res.Status, res)
+		return
+	}
+	isValid, err := d.SessionService.IsValidSession(r.Context(), payload.UserID, payload.Token)
+	if !isValid || err != nil {
+		res := interfaces.NewErrorResponse(http.StatusInternalServerError, err.Error())
+		interfaces.Redererer.JSON(w, res.Status, res)
+		return
+	}
+	payloadQuestion, err := decodeSearchQuestionRequest(r)
+	if err != nil {
+		res := interfaces.NewErrorResponse(http.StatusBadRequest, err.Error())
+		interfaces.Redererer.JSON(w, res.Status, res)
+		return
+	}
+	questions, err := d.QuestionService.SearchQuestions(r.Context(), payloadQuestion.Name, payloadQuestion.Tag)
+	if err != nil {
+		res := interfaces.NewErrorResponse(http.StatusInternalServerError, err.Error())
+		interfaces.Redererer.JSON(w, res.Status, res)
+		return
+	}
+
+	// res := encodeGetQuestionsResponse(questions)
+
+	interfaces.Redererer.JSON(w, http.StatusOK, questions)
+}
