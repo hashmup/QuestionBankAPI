@@ -66,6 +66,7 @@ func (d *Dependency) PostQuestionsHandler(w http.ResponseWriter, r *http.Request
 	succeed, err := d.FolderService.PostQuestions(r.Context(), payload.UserID, payloadFolder.FolderID, &entity.QuestionRequest{
 		Question:        payloadFolder.Question,
 		Answers:         payloadFolder.Answers,
+		Tags:            payloadFolder.Tags,
 		CorrectAnswerID: payloadFolder.CorrectAnswerID,
 	})
 	if !succeed || err != nil {

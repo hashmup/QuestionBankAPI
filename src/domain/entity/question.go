@@ -11,6 +11,7 @@ type QuestionRequest struct {
 	Question        string    `json:"question"`
 	Solved          bool      `json:"solved"`
 	Answers         []*Answer `json:"answers"`
+	Tags            []string  `json:"tags"`
 	CorrectAnswerID int64     `json:"correct_answer_id"`
 }
 

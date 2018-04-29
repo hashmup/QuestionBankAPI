@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
@@ -20,12 +21,38 @@ func NewClassRepository(dbc *sqlx.DB) repository.ClassRepository {
 	}
 }
 
+func (repo *classRepository) GetClasses(ctx context.Context, schoolID int64, name, classCode, term string) ([]*entity.Class, error) {
+	query := sq.Select("*").From("classes").Where(sq.Eq{"school_id": schoolID})
+	if name != "" {
+		query = query.Where(sq.Expr("name LIKE ?", "%"+name+"%"))
+	}
+	if classCode != "" {
+		query = query.Where(sq.Eq{"class_code": classCode})
+	}
+	if term != "" {
+		query = query.Where(sq.Eq{"term": term})
+	}
+	sql, args, _ := query.ToSql()
+	fmt.Printf("%s %#v\n", sql, args)
+	classes := []entity.Class{}
+	err := repo.DBClient.SelectContext(ctx, &classes, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	_classes := []*entity.Class{}
+	for i := range classes {
+		_classes = append(_classes, &classes[i])
+	}
+	return _classes, nil
+}
+
 func (repo *classRepository) GetClassesBySchoolID(ctx context.Context, schoolID int64) ([]*entity.Class, error) {
 	sql, args, _ := sq.Select("*").From("classes").Where(sq.Eq{"school_id": schoolID}).ToSql()
 	classes := []entity.Class{}
 	err := repo.DBClient.SelectContext(ctx, &classes, sql, args...)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	_classes := []*entity.Class{}

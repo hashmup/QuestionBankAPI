@@ -31,7 +31,7 @@ func (d *Dependency) GetClassesHandler(w http.ResponseWriter, r *http.Request) {
 		interfaces.Redererer.JSON(w, res.Status, res)
 		return
 	}
-	classes, err := d.SchoolService.GetClasses(r.Context(), payload.SchoolID)
+	classes, err := d.SchoolService.GetClasses(r.Context(), payload.SchoolID, payload.Name, payload.ClassCode, payload.Term)
 	if err != nil {
 		res := interfaces.NewErrorResponse(http.StatusInternalServerError, err.Error())
 		interfaces.Redererer.JSON(w, res.Status, res)

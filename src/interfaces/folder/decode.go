@@ -19,6 +19,7 @@ type PostQuestionsRequestPayload struct {
 	Question        string           `json:"question"`
 	Answers         []*entity.Answer `json:"answers"`
 	CorrectAnswerID int64            `json:"correct_answer_id"`
+	Tags            []string         `json:"tags"`
 }
 
 func decodeSessionHeaderRequest(r *http.Request) (*entity.SessionHeader, error) {

@@ -29,8 +29,8 @@ func (s *schoolService) GetSchools(ctx context.Context) ([]*entity.School, error
 	return schools, nil
 }
 
-func (s *schoolService) GetClasses(ctx context.Context, schoolID int64) ([]*entity.Class, error) {
-	classes, err := s.classRepo.GetClassesBySchoolID(ctx, schoolID)
+func (s *schoolService) GetClasses(ctx context.Context, schoolID int64, name, classCode, term string) ([]*entity.Class, error) {
+	classes, err := s.classRepo.GetClasses(ctx, schoolID, name, classCode, term)
 	if err != nil {
 		return nil, err
 	}
