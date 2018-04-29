@@ -25,9 +25,9 @@ func (d *Dependency) PostSessionLoginHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	res := encodePostSessionLoginResponse(session)
+	// res := encodePostSessionLoginResponse(session)
 
-	interfaces.Redererer.JSON(w, http.StatusOK, res)
+	interfaces.Redererer.JSON(w, http.StatusOK, session)
 }
 
 func (d *Dependency) PostSessionLogoutHandler(w http.ResponseWriter, r *http.Request) {

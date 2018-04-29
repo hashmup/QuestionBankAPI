@@ -15,8 +15,10 @@ type GetQuestionsRequestPayload struct {
 }
 
 type PostQuestionsRequestPayload struct {
-	FolderID int64                   `json:"folder_id"`
-	Question *entity.QuestionRequest `json:"question"`
+	FolderID        int64            `json:"folder_id"`
+	Question        string           `json:"question"`
+	Answers         []*entity.Answer `json:"answers"`
+	CorrectAnswerID int64            `json:"correct_answer_id"`
 }
 
 func decodeSessionHeaderRequest(r *http.Request) (*entity.SessionHeader, error) {

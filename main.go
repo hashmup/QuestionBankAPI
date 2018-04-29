@@ -9,6 +9,9 @@ import (
 	"github.com/hashmup/QuestionBankAPI/src/application"
 	"github.com/hashmup/QuestionBankAPI/src/config"
 	"github.com/hashmup/QuestionBankAPI/src/infrastructure/persistence"
+	"github.com/hashmup/QuestionBankAPI/src/interfaces/class"
+	"github.com/hashmup/QuestionBankAPI/src/interfaces/folder"
+	"github.com/hashmup/QuestionBankAPI/src/interfaces/question"
 	"github.com/hashmup/QuestionBankAPI/src/interfaces/school"
 	"github.com/hashmup/QuestionBankAPI/src/interfaces/session"
 	"github.com/hashmup/QuestionBankAPI/src/interfaces/user"
@@ -81,6 +84,31 @@ func initHandlers() http.Handler {
 	}
 
 	r = session.MakeSessionHandler(sessionDependency, r)
+
+	classService := application.NewClassService(classRepo)
+	classDependency := &class.Dependency{
+		ClassService:   classService,
+		SessionService: sessionService,
+	}
+
+	r = class.MakeClassHandler(classDependency, r)
+
+	folderRepo := persistence.NewFolderRepository(dbConn)
+	folderService := application.NewFolderService(folderRepo)
+	folderDependency := &folder.Dependency{
+		FolderService:  folderService,
+		SessionService: sessionService,
+	}
+
+	r = folder.MakeFolderHandler(folderDependency, r)
+
+	questionRepo := persistence.NewQuestionRepository(dbConn)
+	questionService := application.NewQuestionService(questionRepo)
+	questionDependency := &question.Dependency{
+		QuestionService: questionService,
+		SessionService:  sessionService,
+	}
+	r = question.MakeQuestionHandler(questionDependency, r)
 
 	r.HandleFunc("/debug/pprof/", pprof.Index)
 	r.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)

@@ -2,6 +2,7 @@ package session
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -33,6 +34,9 @@ func decodeSessionHeaderRequest(r *http.Request) (*entity.SessionHeader, error) 
 	payload := entity.SessionHeader{}
 	auth := r.Header.Get("AuthToken")
 	authInfo := strings.Split(auth, ":")
+	if len(authInfo) != 2 {
+		return nil, errors.New("You need to have header AuthToken with userID:token format")
+	}
 	payload.UserID, _ = strconv.ParseInt(authInfo[0], 10, 64)
 	payload.Token = authInfo[1]
 

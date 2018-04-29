@@ -25,7 +25,5 @@ func (d *Dependency) PostUserRegisterHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	res := encodePostUserRegisterResponse(user)
-
-	interfaces.Redererer.JSON(w, http.StatusOK, res)
+	interfaces.Redererer.JSON(w, http.StatusOK, user)
 }

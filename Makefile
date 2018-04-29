@@ -8,7 +8,7 @@ setup:
 #	source ./.env
 
 build: setup
-	dep ensure -update
+	dep ensure
 	env GOOS=linux GOARCH=amd64 go build
 
 docker-clean:

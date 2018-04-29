@@ -1,4 +1,4 @@
-package folder
+package question
 
 import (
 	"net/http"
@@ -9,11 +9,11 @@ import (
 )
 
 type Dependency struct {
-	FolderService  service.FolderService
-	SessionService service.SessionService
+	QuestionService service.QuestionService
+	SessionService  service.SessionService
 }
 
-func (d *Dependency) GetQuestionsHandler(w http.ResponseWriter, r *http.Request) {
+func (d *Dependency) GetQuestionRationaleHandler(w http.ResponseWriter, r *http.Request) {
 	payload, err := decodeSessionHeaderRequest(r)
 	if err != nil {
 		res := interfaces.NewErrorResponse(http.StatusBadRequest, err.Error())
@@ -26,13 +26,13 @@ func (d *Dependency) GetQuestionsHandler(w http.ResponseWriter, r *http.Request)
 		interfaces.Redererer.JSON(w, res.Status, res)
 		return
 	}
-	payloadQuestion, err := decodeGetQuestionsRequest(r)
+	payloadQuestion, err := decodeGetQuestionRationaleRequest(r)
 	if err != nil {
 		res := interfaces.NewErrorResponse(http.StatusBadRequest, err.Error())
 		interfaces.Redererer.JSON(w, res.Status, res)
 		return
 	}
-	questions, err := d.FolderService.GetQuestions(r.Context(), payload.UserID, payloadQuestion.FolderID)
+	rationales, err := d.QuestionService.GetQuestionRationales(r.Context(), payloadQuestion.QuestionID, payloadQuestion.ClassID)
 	if err != nil {
 		res := interfaces.NewErrorResponse(http.StatusInternalServerError, err.Error())
 		interfaces.Redererer.JSON(w, res.Status, res)
@@ -41,7 +41,7 @@ func (d *Dependency) GetQuestionsHandler(w http.ResponseWriter, r *http.Request)
 
 	// res := encodeGetQuestionsResponse(questions)
 
-	interfaces.Redererer.JSON(w, http.StatusOK, questions)
+	interfaces.Redererer.JSON(w, http.StatusOK, rationales)
 }
 
 func (d *Dependency) PostQuestionsHandler(w http.ResponseWriter, r *http.Request) {
@@ -57,16 +57,18 @@ func (d *Dependency) PostQuestionsHandler(w http.ResponseWriter, r *http.Request
 		interfaces.Redererer.JSON(w, res.Status, res)
 		return
 	}
-	payloadFolder, err := decodePostQuestionsRequest(r)
+	payloadQuestion, err := decodePostQuestionsRequest(r)
 	if err != nil {
 		res := interfaces.NewErrorResponse(http.StatusBadRequest, err.Error())
 		interfaces.Redererer.JSON(w, res.Status, res)
 		return
 	}
-	succeed, err := d.FolderService.PostQuestions(r.Context(), payload.UserID, payloadFolder.FolderID, &entity.QuestionRequest{
-		Question:        payloadFolder.Question,
-		Answers:         payloadFolder.Answers,
-		CorrectAnswerID: payloadFolder.CorrectAnswerID,
+	succeed, err := d.QuestionService.PostQuestions(r.Context(), payload.UserID, &entity.QuestionAnswer{
+		QuestionID:      payloadQuestion.QuestionID,
+		Rationale:       payloadQuestion.Rationale,
+		InitialAnswerID: payloadQuestion.InitialAnswerID,
+		FinalAnswerID:   payloadQuestion.FinalAnswerID,
+		Rating:          payloadQuestion.Rating,
 	})
 	if !succeed || err != nil {
 		res := interfaces.NewErrorResponse(http.StatusInternalServerError, err.Error())
@@ -75,4 +77,35 @@ func (d *Dependency) PostQuestionsHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	interfaces.Redererer.JSON(w, http.StatusOK, nil)
+}
+
+func (d *Dependency) GetQuestionAnswerHandler(w http.ResponseWriter, r *http.Request) {
+	payload, err := decodeSessionHeaderRequest(r)
+	if err != nil {
+		res := interfaces.NewErrorResponse(http.StatusBadRequest, err.Error())
+		interfaces.Redererer.JSON(w, res.Status, res)
+		return
+	}
+	isValid, err := d.SessionService.IsValidSession(r.Context(), payload.UserID, payload.Token)
+	if !isValid || err != nil {
+		res := interfaces.NewErrorResponse(http.StatusInternalServerError, err.Error())
+		interfaces.Redererer.JSON(w, res.Status, res)
+		return
+	}
+	payloadQuestion, err := decodeGetQuestionAnswerRequest(r)
+	if err != nil {
+		res := interfaces.NewErrorResponse(http.StatusBadRequest, err.Error())
+		interfaces.Redererer.JSON(w, res.Status, res)
+		return
+	}
+	answers, err := d.QuestionService.GetQuestionAnswer(r.Context(), payload.UserID, payloadQuestion.QuestionID)
+	if err != nil {
+		res := interfaces.NewErrorResponse(http.StatusInternalServerError, err.Error())
+		interfaces.Redererer.JSON(w, res.Status, res)
+		return
+	}
+
+	// res := encodeGetQuestionsResponse(questions)
+
+	interfaces.Redererer.JSON(w, http.StatusOK, answers)
 }

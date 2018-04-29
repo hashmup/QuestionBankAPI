@@ -15,8 +15,19 @@ type GetFoldersRequestPayload struct {
 }
 
 type PostFoldersRequestPayload struct {
-	ClassID int64  `json:"class_id"`
-	Name    string `json:"name"`
+	ClassID     int64  `json:"class_id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+type PostClassesStudentRequestPayload struct {
+	ClassID int64 `json:"class_id"`
+}
+
+type PostClassesInstructorRequestPayload struct {
+	Name string `json:"name"`
+	Code string `json:"class_code"`
+	Term string `json:"term"`
 }
 
 func decodeGetFoldersRequest(r *http.Request) (*GetFoldersRequestPayload, error) {
@@ -47,6 +58,34 @@ func decodeSessionHeaderRequest(r *http.Request) (*entity.SessionHeader, error) 
 
 func decodePostFoldersRequest(r *http.Request) (*PostFoldersRequestPayload, error) {
 	payload := PostFoldersRequestPayload{}
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		return nil, err
+	}
+	err = interfaces.Validator.Struct(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return &payload, nil
+}
+
+func decodePostStudentRequest(r *http.Request) (*PostClassesStudentRequestPayload, error) {
+	payload := PostClassesStudentRequestPayload{}
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		return nil, err
+	}
+	err = interfaces.Validator.Struct(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return &payload, nil
+}
+
+func decodePostInstructorRequest(r *http.Request) (*PostClassesInstructorRequestPayload, error) {
+	payload := PostClassesInstructorRequestPayload{}
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		return nil, err

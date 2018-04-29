@@ -35,8 +35,24 @@ func (s *classService) GetFolders(ctx context.Context, classID int64) ([]*entity
 	return folders, nil
 }
 
-func (s *classService) PostFolders(ctx context.Context, classID int64, name string) (bool, error) {
-	err := s.classRepo.PostFolders(ctx, classID, name)
+func (s *classService) PostFolders(ctx context.Context, classID int64, name, description string) (bool, error) {
+	err := s.classRepo.PostFolders(ctx, classID, name, description)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (s *classService) JoinClass(ctx context.Context, userID, classID int64) (bool, error) {
+	err := s.classRepo.JoinClass(ctx, userID, classID)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (s *classService) CreateClass(ctx context.Context, userID int64, name, code, term string) (bool, error) {
+	err := s.classRepo.CreateClass(ctx, userID, name, code, term)
 	if err != nil {
 		return false, err
 	}

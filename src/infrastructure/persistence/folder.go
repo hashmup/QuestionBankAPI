@@ -39,13 +39,13 @@ func (repo *folderRepository) GetQuestions(ctx context.Context, userID, folderID
 		for j := range answers {
 			_answers = append(_answers, &answers[j])
 		}
-		studentAnswer := entity.StudentAnswer{}
+		studentAnswer := []entity.StudentAnswer{}
 		sql, args, _ = sq.Select("*").From("student_answers").Where(sq.Eq{"user_id": userID, "question_id": questions[i].ID}).ToSql()
-		err = repo.DBClient.SelectContext(ctx, &studentAnswer, sql, args...)
-
+		repo.DBClient.SelectContext(ctx, &studentAnswer, sql, args...)
 		questionRequests = append(questionRequests, &entity.QuestionRequest{
+			QuestionID:      questions[i].ID,
 			Question:        questions[i].Question,
-			Solved:          err != nil,
+			Solved:          len(studentAnswer) > 0,
 			Answers:         _answers,
 			CorrectAnswerID: questions[i].CorrectAnswerID,
 		})
@@ -53,11 +53,13 @@ func (repo *folderRepository) GetQuestions(ctx context.Context, userID, folderID
 	return questionRequests, nil
 }
 
-func (repo *folderRepository) PostQuestions(ctx context.Context, profID, folderID int64, questionRequest *entity.QuestionRequest) error {
+func (repo *folderRepository) PostQuestions(ctx context.Context, instructorID, folderID int64, questionRequest *entity.QuestionRequest) error {
 	now := time.Now()
 	sql := "INSERT INTO answers (name, created_at, updated_at) VALUES(:name, :created_at, :updated_at)"
 	answerIDs := []int64{}
 	for i := range questionRequest.Answers {
+		questionRequest.Answers[i].CreatedAt = now
+		questionRequest.Answers[i].UpdatedAt = now
 		res, err := repo.DBClient.NamedExecContext(ctx, sql, questionRequest.Answers[i])
 		if err != nil {
 			return err
@@ -68,7 +70,7 @@ func (repo *folderRepository) PostQuestions(ctx context.Context, profID, folderI
 	question := entity.Question{
 		Question:        questionRequest.Question,
 		FolderID:        folderID,
-		ProfID:          profID,
+		InstructorID:    instructorID,
 		Answer1:         answerIDs[0],
 		Answer2:         answerIDs[1],
 		Answer3:         answerIDs[2],
@@ -77,7 +79,7 @@ func (repo *folderRepository) PostQuestions(ctx context.Context, profID, folderI
 		CreatedAt:       now,
 		UpdatedAt:       now,
 	}
-	sql = "INSERT INTO questions (question, answer_1, answer_2, answer_3, answer_4, correct_answer_id, created_at, updated_at) VALUES (:question, :answer_1, :answer_2, :answer_3, :answer_4, :correct_answer_id, :created_at, :updated_at)"
+	sql = "INSERT INTO questions (question, folder_id, instructor_id, answer_1, answer_2, answer_3, answer_4, correct_answer_id, created_at, updated_at) VALUES (:question, :folder_id, :instructor_id, :answer_1, :answer_2, :answer_3, :answer_4, :correct_answer_id, :created_at, :updated_at)"
 	_, err := repo.DBClient.NamedExecContext(ctx, sql, question)
 	if err != nil {
 		return err
