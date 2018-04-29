@@ -19,8 +19,16 @@ func NewUserService(userRepo repository.UserRepository) service.UserService {
 	}
 }
 
-func (s *userService) PostUserRegister(ctx context.Context, name, email, password, accountType string, schoolID int64) (*entity.User, error) {
+func (s *userService) PostUserRegister(ctx context.Context, name, email, password, accountType string, schoolID int64) (*entity.UserResponse, error) {
 	user, err := s.userRepo.PostUserRegister(ctx, name, email, password, accountType, schoolID)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (s *userService) GetUser(ctx context.Context, userID int64) (*entity.UserResponse, error) {
+	user, err := s.userRepo.GetUser(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

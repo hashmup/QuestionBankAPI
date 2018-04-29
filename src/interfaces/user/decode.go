@@ -3,6 +3,7 @@ package user
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/hashmup/QuestionBankAPI/src/interfaces"
 )
@@ -18,6 +19,10 @@ type PostUserRegisterRequestPayload struct {
 type PostUserLoginRequestPayload struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type GetUsersRequestPayload struct {
+	UserID int64 `json:"user_id"`
 }
 
 func decodePostUserRegisterRequest(r *http.Request) (*PostUserRegisterRequestPayload, error) {
@@ -41,6 +46,18 @@ func decodePostUserLoginRequest(r *http.Request) (*PostUserLoginRequestPayload, 
 		return nil, err
 	}
 	err = interfaces.Validator.Struct(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return &payload, nil
+}
+
+func decodeGetUsersRequest(r *http.Request) (*GetUsersRequestPayload, error) {
+	payload := GetUsersRequestPayload{}
+	userID, _ := strconv.ParseInt(r.URL.Query().Get("user_id"), 10, 64)
+	payload.UserID = userID
+	err := interfaces.Validator.Struct(payload)
 	if err != nil {
 		return nil, err
 	}

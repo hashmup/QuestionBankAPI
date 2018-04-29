@@ -17,3 +17,12 @@ type User struct {
 	UpdatedAt         time.Time      `db:"updated_at" json:"-"`
 	DeletedAt         mysql.NullTime `db:"deleted_at" json:"-"`
 }
+
+type UserResponse struct {
+	ID         int64  `json:"id"`
+	Name       string `json:"name"`
+	Email      string `json:"email"`
+	SchoolID   int64  `json:"school_id"`
+	SchoolName string `json:"school_name"`
+	Type       string `json:"type"`
+}

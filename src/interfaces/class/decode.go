@@ -21,7 +21,7 @@ type PostFoldersRequestPayload struct {
 }
 
 type PostClassesStudentRequestPayload struct {
-	ClassID int64 `json:"class_id"`
+	ClassID int64 `json:"id"`
 }
 
 type PostClassesInstructorRequestPayload struct {

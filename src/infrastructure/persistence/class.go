@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -110,15 +111,21 @@ func (repo *classRepository) PostFolders(ctx context.Context, classID int64, nam
 }
 
 func (repo *classRepository) JoinClass(ctx context.Context, userID, classID int64) error {
+	userClassAssoc := entity.UserClassAssoc{}
+	sql, args, _ := sq.Select("*").From("user_class_assoc").Where(sq.Eq{"user_id": userID, "class_id": classID}).ToSql()
+	err := repo.DBClient.GetContext(ctx, &userClassAssoc, sql, args...)
+	if err != nil {
+		return errors.New("User already joined the class")
+	}
 	now := time.Now()
-	userClassAssoc := entity.UserClassAssoc{
+	userClassAssoc = entity.UserClassAssoc{
 		UserID:    userID,
 		ClassID:   classID,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
-	sql := "INSERT INTO user_class_assoc (user_id, class_id, created_at, updated_at) VALUES (:user_id, :class_id, :created_at, :updated_at)"
-	_, err := repo.DBClient.NamedExecContext(ctx, sql, userClassAssoc)
+	sql = "INSERT INTO user_class_assoc (user_id, class_id, created_at, updated_at) VALUES (:user_id, :class_id, :created_at, :updated_at)"
+	_, err = repo.DBClient.NamedExecContext(ctx, sql, userClassAssoc)
 	if err != nil {
 		return err
 	}
