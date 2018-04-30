@@ -50,3 +50,11 @@ func (s *questionService) SearchQuestions(ctx context.Context, name, tag string)
 	}
 	return questions, nil
 }
+
+func (s *questionService) AnalyzeQuestion(ctx context.Context, questionID int64) (*entity.QuestionAnalysis, error) {
+	questionAnalysis, err := s.questionRepo.AnalyzeQuestion(ctx, questionID)
+	if err != nil {
+		return nil, err
+	}
+	return questionAnalysis, nil
+}

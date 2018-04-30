@@ -10,10 +10,12 @@ func MakeQuestionHandler(d *Dependency, r *chi.Mux) *chi.Mux {
 	postQuestionsHandler := interfaces.CustomHandler{Impl: d.PostQuestionsHandler}
 	getQuestionAnswerHandler := interfaces.CustomHandler{Impl: d.GetQuestionAnswerHandler}
 	searchQuestionHandler := interfaces.CustomHandler{Impl: d.SearchQuestionHandler}
+	analyzeQuestionHandler := interfaces.CustomHandler{Impl: d.AnalyzeQuestionHandler}
 
 	r.Method("GET", "/questions/rationales", getQuestionRationaleHandler)
 	r.Method("POST", "/questions", postQuestionsHandler)
 	r.Method("GET", "/questions/answer", getQuestionAnswerHandler)
 	r.Method("GET", "/questions/search", searchQuestionHandler)
+	r.Method("GET", "/questions/analyze", analyzeQuestionHandler)
 	return r
 }

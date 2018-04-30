@@ -150,3 +150,44 @@ func (repo *questionRepository) SearchQuestions(ctx context.Context, name, tag s
 	}
 	return questionRequests, nil
 }
+
+func (repo *questionRepository) AnalyzeQuestion(ctx context.Context, questionID int64) (*entity.QuestionAnalysis, error) {
+	result := entity.QuestionAnalysis{}
+	question := entity.Question{}
+	rating := entity.Rating{}
+	studentAnswers := []entity.StudentAnswer{}
+	sql, args, _ := sq.Select("*").From("questions").Where(sq.Eq{"id": questionID}).ToSql()
+	err := repo.DBClient.GetContext(ctx, &question, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+	sql, args, _ = sq.Select("*").From("student_answers").Where(sq.Eq{"question_id": questionID}).ToSql()
+	err = repo.DBClient.SelectContext(ctx, &studentAnswers, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+	// answer ratio + switch answer
+	answers := []float64{0, 0, 0, 0}
+	for i := range studentAnswers {
+		answers[studentAnswers[i].FinalAnswerID] += 1
+		if question.CorrectAnswerID == studentAnswers[i].InitialAnswerID && question.CorrectAnswerID == studentAnswers[i].FinalAnswerID {
+			result.QuestionStudentSwitchAnswer.CorrectToWrong += 1.0
+		}
+		if question.CorrectAnswerID == studentAnswers[i].FinalAnswerID && question.CorrectAnswerID == studentAnswers[i].InitialAnswerID {
+			result.QuestionStudentSwitchAnswer.WrongToCorrect += 1.0
+		}
+		sql, args, _ := sq.Select("*").From("ratings").Where(sq.Eq{"id": studentAnswers[i].RatingID}).ToSql()
+		repo.DBClient.GetContext(ctx, &rating, sql, args...)
+		result.QuestionStudentAnswerRating.AverageRating1 += float64(rating.Rating1)
+		result.QuestionStudentAnswerRating.AverageRating2 += float64(rating.Rating2)
+		result.QuestionStudentAnswerRating.AverageRating3 += float64(rating.Rating3)
+		result.QuestionStudentAnswerRating.AverageRating4 += float64(rating.Rating4)
+	}
+	result.QuestionStudentAnswer.RateAnswer1 = answers[0] / float64(len(studentAnswers))
+	result.QuestionStudentAnswer.RateAnswer2 = answers[1] / float64(len(studentAnswers))
+	result.QuestionStudentAnswer.RateAnswer3 = answers[2] / float64(len(studentAnswers))
+	result.QuestionStudentAnswer.RateAnswer4 = answers[3] / float64(len(studentAnswers))
+	result.QuestionStudentSwitchAnswer.CorrectToWrong /= float64(len(studentAnswers))
+	result.QuestionStudentSwitchAnswer.WrongToCorrect /= float64(len(studentAnswers))
+	return &result, nil
+}

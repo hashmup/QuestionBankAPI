@@ -32,6 +32,10 @@ type SearchQuestionRequestPayload struct {
 	Tag  string `json:"tag"`
 }
 
+type AnalyzeQuestionRequestPayload struct {
+	QuestionID int64 `json:"question_id"`
+}
+
 func decodeSessionHeaderRequest(r *http.Request) (*entity.SessionHeader, error) {
 	payload := entity.SessionHeader{}
 	auth := r.Header.Get("AuthToken")
@@ -91,6 +95,14 @@ func decodeSearchQuestionRequest(r *http.Request) (*SearchQuestionRequestPayload
 	tag := r.URL.Query().Get("tag")
 	payload.Name = name
 	payload.Tag = tag
+
+	return &payload, nil
+}
+
+func decodeAnalyzeQuestionRequest(r *http.Request) (*AnalyzeQuestionRequestPayload, error) {
+	payload := AnalyzeQuestionRequestPayload{}
+	questionID, _ := strconv.ParseInt(r.URL.Query().Get("question_id"), 10, 64)
+	payload.QuestionID = questionID
 
 	return &payload, nil
 }
