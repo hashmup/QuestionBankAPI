@@ -103,11 +103,11 @@ func (repo *questionRepository) SearchQuestions(ctx context.Context, name, tag s
 	if tag != "" {
 		query = query.Join("question_tag_assoc ON question_tag_assoc.question_id = questions.id").Join("tags ON question_tag_assoc.tag_id = tags.id").Where(sq.Expr("tags.name LIKE ?", "%"+tag+"%"))
 		if name != "" {
-			query = query.Where(sq.Expr("questions.name LIKE ?", "%"+name+"%"))
+			query = query.Where(sq.Expr("questions.question LIKE ?", "%"+name+"%"))
 		}
 	} else {
 		if name != "" {
-			query = query.Where(sq.Expr("name LIKE ?", "%"+name+"%"))
+			query = query.Where(sq.Expr("question LIKE ?", "%"+name+"%"))
 		}
 	}
 
