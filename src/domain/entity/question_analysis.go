@@ -14,10 +14,10 @@ type QuestionStudentAnswerRating struct {
 }
 
 type QuestionStudentAnswer struct {
-	RateAnswer1 float64 `json:"rate_answer_1"`
-	RateAnswer2 float64 `json:"rate_answer_2"`
-	RateAnswer3 float64 `json:"rate_answer_3"`
-	RateAnswer4 float64 `json:"rate_answer_4"`
+	AnswerNum1 int64 `json:"answer_num_1"`
+	AnswerNum2 int64 `json:"answer_num_2"`
+	AnswerNum3 int64 `json:"answer_num_3"`
+	AnswerNum4 int64 `json:"answer_num_4"`
 }
 
 type QuestionStudentSwitchAnswer struct {
